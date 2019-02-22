@@ -1,0 +1,7 @@
+scala/target/
+scala/publisher/target/
+scala/subscriber/target/
+scala/project/target/
+scala/.idea
+scala/project/project
+example
