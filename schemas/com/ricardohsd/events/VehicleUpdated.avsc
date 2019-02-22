@@ -1,0 +1,36 @@
+{
+    "namespace": "com.ricardohsd.events",
+     "type": "record",
+     "name": "VehicleUpdated",
+     "fields":[
+         {
+            "name": "id",
+            "type": "string"
+         },
+         {
+            "name": "latitude",
+            "type": "double",
+            "precision": 8,
+            "scale": 2
+         },
+         {
+            "name": "longitude",
+            "type": "double",
+            "precision": 6,
+            "scale": 8
+         },
+         {
+            "name": "producer",
+            "type": "string"
+         },
+         {
+            "name": "createdAt",
+            "type": "long"
+         },
+         {
+            "name": "comments",
+            "type": "string"
+         }
+     ]
+}
+
