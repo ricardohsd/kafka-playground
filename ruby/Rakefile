@@ -1,0 +1,77 @@
+require 'rubygems'
+require 'bundler/setup'
+require 'logger'
+require 'kafka'
+require 'avro_turf/messaging'
+require 'securerandom'
+require 'avro-patches'
+
+require './lib/avro_serde'
+require './lib/playground'
+
+task :producer do
+  logger = Logger.new(STDOUT)
+  logger.level = Logger::INFO
+
+  kafka = Kafka.new(['localhost:9092'],
+                    client_id: 'my-application',
+                    logger: logger)
+
+  encoder = Playground::Events::VehicleUpdated.new(
+    registry_url: 'http://localhost:8081/',
+    schemas_path: '../schemas/'
+  )
+
+  producer = Playground::Producer.new(topic: 'vehicle_updates',
+                                      kafka: kafka,
+                                      logger: logger,
+                                      encoder: encoder)
+
+  trap('SIGINT') do
+    puts 'Quitting'
+    producer.stop
+    exit(1)
+  end
+
+  while true do
+    event = {
+      'id' => SecureRandom.uuid,
+      'latitude' => 52.5177399,
+      'longitude' => 13.401178,
+      'producer' => 'ruby',
+      'createdAt' => Time.now.to_i,
+      'comments' => 'A comment'
+    }
+    producer.produce(key: event['id'], data: event)
+    logger.info('message produced')
+    sleep 1
+  end
+end
+
+task :consumer do
+  logger = Logger.new(STDOUT)
+  logger.level = Logger::INFO
+
+  kafka = Kafka.new(['localhost:9092'], client_id: 'ruby-app', logger: logger)
+
+  decoder = Playground::Events::VehicleUpdated.new(
+    registry_url: 'http://localhost:8081/',
+    schemas_path: '../schemas/'
+  )
+
+  consumer = Playground::Consumer.new(topic: 'vehicle_updates',
+                                      kafka: kafka,
+                                      logger: logger,
+                                      decoder: decoder)
+
+  trap('SIGINT') do
+    puts 'Quitting'
+    consumer.stop
+    exit(1)
+  end
+
+  consumer.each_message do |message|
+    puts message.inspect
+    logger.info("Got message: #{message.inspect}")
+  end
+end

@@ -1,0 +1,28 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    avro (1.8.2)
+      multi_json
+    avro-patches (0.4.1)
+      avro (= 1.8.2)
+    avro_turf (0.8.1)
+      avro (>= 1.7.7, < 1.9)
+      excon (~> 0.45)
+    digest-crc (0.4.1)
+    excon (0.62.0)
+    multi_json (1.13.1)
+    rake (12.3.2)
+    ruby-kafka (0.7.5)
+      digest-crc
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  avro-patches
+  avro_turf
+  rake
+  ruby-kafka
+
+BUNDLED WITH
+   1.16.1
